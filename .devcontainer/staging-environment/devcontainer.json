@@ -1,0 +1,59 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/java
+{
+	"name": "staging-environment",
+	// Explicitly declaring which source-code folder to mount and where to mount it in the container
+	"workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+	"workspaceFolder": "/workspace",
+	"build": {
+		// https://containers.dev/guide/dockerfile
+		"dockerfile": "../Dockerfile",
+		"args": {
+			"CATALINA_OPTS_FILE": "./staging-environment/catalina_opts.txt"
+		}
+	},
+	"features": {
+		// Ensures that Maven is installed in the container
+		// No need to specify Java version here; the Dockerfile FROM image handles that
+		"ghcr.io/devcontainers/features/java:1": {
+			"version": "none",
+			"installMaven": "true",
+			"installGradle": "false"
+		}
+	},
+	"mounts": [
+		"source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind", // Binding the host docker socket to the container
+		"source=m2volume,target=/usr/local/.m2/repository,type=volume" // Establishing a persistent volume for maven local repository downloads
+	],
+	// Docker-from-Docker recommendations
+	// Per https://github.com/microsoft/vscode-dev-containers/tree/main/containers/docker-from-docker
+	"overrideCommand": false,
+	"remoteUser": "vscode",
+	"runArgs": ["--init"],
+	// End of Docker-from-Docker recommendations
+	"postStartCommand": "/usr/local/bin/deploy.sh",
+
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"vscjava.vscode-java-pack",
+				"ms-azuretools.vscode-docker"
+			],
+			"settings": {
+				"java.configuration.maven.userSettings": "/usr/local/.m2/mvnsettings.xml",
+				"maven.settingsFile": "/usr/local/.m2/mvnsettings.xml",
+				"maven.terminal.favorites": [
+
+					{
+						"alias": "build",
+						"command": "clean install -e"
+					},
+					{
+						"alias": "quick build",
+						"command": "clean install -e -DskipTests=true"
+					}
+				]
+			}
+		}
+	}
+}
