@@ -14,11 +14,14 @@
 	},
 	"features": {
 		// Ensures that Maven is installed in the container
-		// No need to specify Java version here; the Dockerfile FROM image handles that
 		"ghcr.io/devcontainers/features/java:1": {
-			"version": "none",
+			"version": "17",
 			"installMaven": "true",
 			"installGradle": "false"
+		},
+		// Ensures that Quarkus is installed in the container
+		"ghcr.io/devcontainers-contrib/features/quarkus-sdkman:2": {
+			"jdkVersion": "17"
 		}
 	},
 	"mounts": [
@@ -32,11 +35,11 @@
 	"runArgs": ["--init"],
 	// End of Docker-from-Docker recommendations
 	"postStartCommand": "/usr/local/bin/deploy.sh",
-
 	"customizations": {
 		"vscode": {
 			"extensions": [
 				"vscjava.vscode-java-pack",
+				"redhat.vscode-quarkus",
 				"ms-azuretools.vscode-docker"
 			],
 			"settings": {
