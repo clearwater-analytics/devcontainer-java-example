@@ -7,18 +7,9 @@
 	"workspaceFolder": "/workspace",
 	"build": {
 		// https://containers.dev/guide/dockerfile
-		"dockerfile": "../Dockerfile",
-		"args": {
-			"CATALINA_OPTS_FILE": "./staging-environment/catalina_opts.txt"
-		}
+		"dockerfile": "../Dockerfile"
 	},
 	"features": {
-		// Ensures that Maven is installed in the container
-		"ghcr.io/devcontainers/features/java:1": {
-			"version": "17",
-			"installMaven": "true",
-			"installGradle": "false"
-		},
 		// Ensures that Quarkus is installed in the container
 		"ghcr.io/devcontainers-contrib/features/quarkus-sdkman:2": {
 			"jdkVersion": "17"
@@ -26,7 +17,7 @@
 	},
 	"mounts": [
 		"source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind", // Binding the host docker socket to the container
-		"source=m2volume,target=/usr/local/.m2/repository,type=volume" // Establishing a persistent volume for maven local repository downloads
+		"source=m2volume,target=/home/vscode/.m2/repository,type=volume" // Establishing a persistent volume for maven local repository downloads
 	],
 	// Docker-from-Docker recommendations
 	// Per https://github.com/microsoft/vscode-dev-containers/tree/main/containers/docker-from-docker
@@ -34,29 +25,18 @@
 	"remoteUser": "vscode",
 	"runArgs": ["--init"],
 	// End of Docker-from-Docker recommendations
-	"postStartCommand": "/usr/local/bin/deploy.sh",
+	"containerEnv": {
+		// You can specify environment variables here, which will be available to the application via System.getenv()
+		"CUSTOM_PROP": "Staging"
+	},
+	"postStartCommand": "./mvnw compile quarkus:dev",
 	"customizations": {
 		"vscode": {
 			"extensions": [
 				"vscjava.vscode-java-pack",
 				"redhat.vscode-quarkus",
 				"ms-azuretools.vscode-docker"
-			],
-			"settings": {
-				"java.configuration.maven.userSettings": "/usr/local/.m2/mvnsettings.xml",
-				"maven.settingsFile": "/usr/local/.m2/mvnsettings.xml",
-				"maven.terminal.favorites": [
-
-					{
-						"alias": "build",
-						"command": "clean install -e"
-					},
-					{
-						"alias": "quick build",
-						"command": "clean install -e -DskipTests=true"
-					}
-				]
-			}
+			]
 		}
 	}
 }

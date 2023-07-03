@@ -35,49 +35,11 @@ RUN echo -e "#!/bin/sh\n\
 
 ############## End Docker-from-Docker section #############
 
-################### Tomcat installation ###################
-
-# Set Tomcat version and download URL
-ENV TOMCAT_VERSION=10.1.10
-ENV TOMCAT_URL="https://dlcdn.apache.org/tomcat/tomcat-10/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz"
-
-# Download and extract Tomcat
-RUN wget -qO- "${TOMCAT_URL}" | tar xvz -C /usr/local
-
-# Set CATALINA_HOME variable
-ENV CATALINA_HOME=/usr/local/apache-tomcat-$TOMCAT_VERSION
-
-# Copy tomcat-users.xml file into tomcat config folder
-COPY tomcat-users.xml $CATALINA_HOME/conf/tomcat-users.xml
-
-# Add Tomcat bin directory to PATH
-ENV PATH="${CATALINA_HOME}/bin:${PATH}"
-
-# Pass CATALINA_OPTS_FILE as a build argument and copy the file to CATALINA_HOME
-ARG CATALINA_OPTS_FILE
-COPY ${CATALINA_OPTS_FILE} ${CATALINA_HOME}/catalina_opts.txt
-
-# Set tomcat folder permissions
-RUN chown -R vscode:vscode $CATALINA_HOME
-
-# Copy the deployment script to the container and make an alias for it
-COPY deploy.sh /usr/local/bin/deploy.sh
-RUN echo "alias deploy='/usr/local/bin/deploy.sh'" >> /home/vscode/.bashrc
-
-# Make the deployment script executable
-RUN chmod +x /usr/local/bin/deploy.sh
-
-# Expose Tomcat port
-EXPOSE 8080
-
-################### End Tomcat section ###################
-
 ################### Maven configuration ##################
 
-# Establish .m2 folder, set ownership, and copy settings.xml file to the container
-RUN mkdir -p /usr/local/.m2/repository 
-RUN chown -R vscode:vscode /usr/local/.m2
-COPY mvnsettings.xml /usr/local/.m2/mvnsettings.xml
+# Establish .m2 folder and set ownership
+RUN mkdir -p /home/vscode/.m2/repository 
+RUN chown -R vscode:vscode /home/vscode/.m2
 
 ################### End Maven section ####################
 

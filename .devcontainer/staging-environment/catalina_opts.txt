@@ -1,4 +1,0 @@
--Dfile.encoding=UTF-8
--XX:+HeapDumpOnOutOfMemoryError
--Xmx8g
--Xss16m
