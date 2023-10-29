@@ -2,6 +2,8 @@
 
 This repository contains a [DevContainer](https://containers.dev) setup which provides an isolated development environment with the necessary tools and configurations to develop, build, and deploy Quarkus web applications. It utilizes Docker to provide a consistent and reproducible development environment.
 
+This repository is a companion to [Reproducible Local Development with Dev Containers](https://medium.com/cwan-engineering/reproducible-local-development-with-dev-containers-0ed5fa850b36) on Medium.
+
 ## Usage Instructions
 
 ### Prerequisites
